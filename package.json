@@ -1,7 +1,7 @@
 {
   "name": "cloudwatch-log-scraper",
   "version": "1.0.0",
-  "description": "",
+  "description": "Convenience functions for scraping AWS CloudWatch logs.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,8 +10,8 @@
     "type": "git",
     "url": "git+https://github.com/kalevalp/cloudwatch-log-scraper.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Kalev Alpernas <kalevalp@tauex.tau.ac.il>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/kalevalp/cloudwatch-log-scraper/issues"
   },
