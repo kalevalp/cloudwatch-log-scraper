@@ -1,0 +1,22 @@
+{
+  "name": "cloudwatch-log-scraper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kalevalp/cloudwatch-log-scraper.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kalevalp/cloudwatch-log-scraper/issues"
+  },
+  "homepage": "https://github.com/kalevalp/cloudwatch-log-scraper#readme",
+  "dependencies": {
+    "aws-sdk": "^2.425.0"
+  }
+}
