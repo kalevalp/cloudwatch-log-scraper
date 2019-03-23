@@ -73,20 +73,3 @@ function LogScraper(region) {
 }
 
 module.exports.LogScraper = LogScraper;
-
-
-const scraper = new LogScraper('us-east-1');
-
-
-
-// getAllLogGroups()
-//     .then(a => console.log(a));
-
-// getAllLogStreamsOfGroup('/aws/lambda/realworld-dev-watchtower-monitor')
-//     .then(a => console.log(a));
-
-// getAllLogStreams()
-//     .then(a => console.log(a));
-
-scraper.getAllLogItemsForStream('/aws/lambda/realworld-dev-watchtower-monitor', '2019/03/20/[$LATEST]1625d9ff778b4139ab0cef32963c5c70')
-    .then(a => console.log(a))
