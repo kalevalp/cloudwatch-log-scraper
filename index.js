@@ -68,8 +68,44 @@ function LogScraper(region) {
 
             return entries;
         },
+        
+        getAllLogItemsForGroup: async function(group) {
+            const streams = await this.getAllLogStreamsOfGroup(group);
+            
+            let items = []
+            
+            for (const stream of streams) {
+                const tmpItems = await this.getAllLogItemsForStream(group, stream);
+                items = items.concat(tmpItems);
+            }
+            
+            return items;
+            
+        }
+        
     }
 
 }
 
 module.exports.LogScraper = LogScraper;
+
+if (require.main === module) {
+
+    const scraper = new LogScraper('us-east-1');
+
+    // getAllLogGroups()
+    //     .then(a => console.log(a));
+
+    // getAllLogStreamsOfGroup('/aws/lambda/realworld-dev-watchtower-monitor')
+    //     .then(a => console.log(a));
+
+    // getAllLogStreams()
+    //     .then(a => console.log(a));
+
+    // scraper.getAllLogItemsForStream('/aws/lambda/realworld-dev-watchtower-monitor', '2019/03/20/[$LATEST]1625d9ff778b4139ab0cef32963c5c70')
+    //     .then(a => console.log(a));
+
+    scraper.getAllLogItemsForGroup('/aws/lambda/realworld-dev-watchtower-monitor')
+        .then(a => console.log(a));
+
+}
