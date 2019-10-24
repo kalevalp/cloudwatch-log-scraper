@@ -86,7 +86,7 @@ function LogScraper(region) {
 	getAllLogItemsForGroupMatching: async function(group, regex, startTime) {
 	    const queryParams = {
 		logGroupName: group,
-		queryString: `fields @message | filter @message like "VIOLATION"`,// ${regex}`,
+		queryString: `fields @message | filter @message like ${regex}`,
 		startTime: Math.ceil(Date.now()/1000)-(startTime ? startTime : 86400),
 		endTime: Math.ceil(Date.now()/1000),
 	    };
