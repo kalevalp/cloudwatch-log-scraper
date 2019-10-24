@@ -1,6 +1,6 @@
 {
   "name": "cloudwatch-log-scraper",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Convenience functions for scraping AWS CloudWatch logs.",
   "main": "index.js",
   "scripts": {
