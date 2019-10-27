@@ -83,27 +83,26 @@ function LogScraper(region) {
 
         },
 
-	getAllLogItemsForGroupMatching: async function(group, regex, startTime) {
-	    const queryParams = {
+	getAllLogItemsForGroupMatching: async function(group, pattern) {
+	    const params = {
 		logGroupName: group,
-		queryString: `fields @message | filter @message like ${regex}`,
-		startTime: Math.ceil(Date.now()/1000)-(startTime ? startTime : 86400),
-		endTime: Math.ceil(Date.now()/1000),
+		filterPattern: pattern,
 	    };
-	    const queryId = (await cloudwatchlogs.startQuery(queryParams).promise()).queryId;
+	    let data = await cloudwatchlogs.filterLogEvents(params).promise();
 
-	    let wait = 50;
+	    let events = data.events;
 
-	    while (true) {
-		const res = await cloudwatchlogs.getQueryResults({queryId}).promise();
-		if (res.status === 'Complete') {
-		    return res.results.map(event => event[0].value);
-		} else if (res.status === 'Running' || res.status === 'Scheduled') {
-		    if (wait < 5000) wait = wait * 2;
-		} else {
-		    throw "Unexpected result from query."
-		}
+	    let nextToken = data.nextToken;
+
+	    while (nextToken) {
+		params.nextToken = nextToken;
+
+		data = await cloudwatchlogs.filterLogEvents(params).promise();
+		events = events.concat(data.events);
+		nextToken = data.nextToken;
 	    }
+
+	    return events;
 	},
     }
 
@@ -130,12 +129,14 @@ if (require.main === module) {
     // scraper.getAllLogItemsForGroup('/aws/lambda/realworld-dev-watchtower-monitor')
     //     .then(a => console.log(a));
 
-    const notificationDelayRE = /@@@@WT_PROF: VIOLATION REPORT DELAY: ([0-9]*)\(ms\)/;
+    const pattern = 'WT_PROF VIOLATION REPORT DELAY';
+
+    // const notificationDelayRE = /@@@@WT_PROF: VIOLATION REPORT DELAY: ([0-9]*)\(ms\)/;
 //    const notificationDelayRE = '\"VIOLATION REPORT DELAY\"';
 
     const logGroup = '/aws/lambda/wt-full-flow-test-watchtower-monitor';
 
-    scraper.getAllLogItemsForGroupMatching(logGroup, notificationDelayRE)
+    scraper.getAllLogItemsForGroupMatching(logGroup, pattern)
 	.then(res => console.log(res));
 
 }
