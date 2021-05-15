@@ -108,8 +108,11 @@ function LogScraper(region) {
         clearLogGroup: async function (group) {
             const streams = await this.getAllLogStreamsOfGroup(group)
 
+            console.log(`Got the following streams for group ${group}:\n${streams}`)
+
             for (const stream of streams) {
-                await cloudwatchlogs.deleteLogStream({logGroupName:group, logStreamName: stream})
+                console.log(`Deleting stream ${stream} of group ${group}`)
+                const resp = await cloudwatchlogs.deleteLogStream({logGroupName:group, logStreamName: stream}).promise()
             }
         }
     }
@@ -137,14 +140,16 @@ if (require.main === module) {
     // scraper.getAllLogItemsForGroup('/aws/lambda/realworld-dev-watchtower-monitor')
     //     .then(a => console.log(a));
 
-    const pattern = 'WT_PROF VIOLATION REPORT DELAY';
+    // const pattern = 'WT_PROF VIOLATION REPORT DELAY';
 
     // const notificationDelayRE = /@@@@WT_PROF: VIOLATION REPORT DELAY: ([0-9]*)\(ms\)/;
 //    const notificationDelayRE = '\"VIOLATION REPORT DELAY\"';
 
-    const logGroup = '/aws/lambda/wt-full-flow-test-watchtower-monitor';
+    // const logGroup = '/aws/lambda/wt-full-flow-test-watchtower-monitor';
+    //
+    // scraper.getAllLogItemsForGroupMatching(logGroup, pattern)
+    //     .then(res => console.log(res));
 
-    scraper.getAllLogItemsForGroupMatching(logGroup, pattern)
-        .then(res => console.log(res));
-
+    const group = '/aws/lambda/wt-collision-count-test-watchtower-monitor'
+    scraper.clearLogGroup(group)
 }
