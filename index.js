@@ -83,27 +83,35 @@ function LogScraper(region) {
 
         },
 
-	getAllLogItemsForGroupMatching: async function(group, pattern) {
-	    const params = {
-		logGroupName: group,
-		filterPattern: pattern,
-	    };
-	    let data = await cloudwatchlogs.filterLogEvents(params).promise();
+        getAllLogItemsForGroupMatching: async function(group, pattern) {
+            const params = {
+                logGroupName: group,
+                filterPattern: pattern,
+            };
+            let data = await cloudwatchlogs.filterLogEvents(params).promise();
 
-	    let events = data.events;
+            let events = data.events;
 
-	    let nextToken = data.nextToken;
+            let nextToken = data.nextToken;
 
-	    while (nextToken) {
-		params.nextToken = nextToken;
+            while (nextToken) {
+                params.nextToken = nextToken;
 
-		data = await cloudwatchlogs.filterLogEvents(params).promise();
-		events = events.concat(data.events);
-		nextToken = data.nextToken;
-	    }
+                data = await cloudwatchlogs.filterLogEvents(params).promise();
+                events = events.concat(data.events);
+                nextToken = data.nextToken;
+            }
 
-	    return events;
-	},
+            return events;
+        },
+
+        clearLogGroup: async function (group) {
+            const streams = await getAllLogStreamsOfGroup(group)
+
+            for (const stream of streams) {
+                await cloudwatchlogs.deleteLogStream({logGroupName:group, logStreamName: stream})
+            }
+        }
     }
 
 }
@@ -137,6 +145,6 @@ if (require.main === module) {
     const logGroup = '/aws/lambda/wt-full-flow-test-watchtower-monitor';
 
     scraper.getAllLogItemsForGroupMatching(logGroup, pattern)
-	.then(res => console.log(res));
+        .then(res => console.log(res));
 
 }
