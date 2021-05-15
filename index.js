@@ -34,12 +34,12 @@ function LogScraper(region) {
         },
 
         getAllLogStreams: async function () {
-            const lgs = await getAllLogGroups();
+            const lgs = await this.getAllLogGroups();
 
             let logStreams = []
 
             for (const lg of lgs) {
-                const lss = await getAllLogStreamsOfGroup(lg);
+                const lss = await this.getAllLogStreamsOfGroup(lg);
                 logStreams = logStreams.concat(lss);
             }
 
@@ -58,7 +58,7 @@ function LogScraper(region) {
             while (nextToken) {
                 logEvents = await cloudwatchlogs.getLogEvents({logGroupName: group , logStreamName: stream, nextToken}).promise();
 
-                if (logEvents.events.lenth > 0) {
+                if (logEvents.events.length > 0) {
                     nextToken = logEvents.nextForwardToken;
                     entries = entries.concat(logEvents.events);
                 } else {
@@ -106,7 +106,7 @@ function LogScraper(region) {
         },
 
         clearLogGroup: async function (group) {
-            const streams = await getAllLogStreamsOfGroup(group)
+            const streams = await this.getAllLogStreamsOfGroup(group)
 
             for (const stream of streams) {
                 await cloudwatchlogs.deleteLogStream({logGroupName:group, logStreamName: stream})
