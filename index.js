@@ -91,7 +91,7 @@ function LogScraper(region) {
             const params = {
                 logGroupName: group,
                 filterPattern: pattern,
-                stream: stream
+                logStreamNames: [stream]
             };
             return await getAllLogItemsMatching(params);
         },
