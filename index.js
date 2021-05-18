@@ -3,6 +3,24 @@ const aws = require('aws-sdk');
 function LogScraper(region) {
     const cloudwatchlogs = new aws.CloudWatchLogs({region});
 
+    const getAllLogItemsMatching = async function (params) {
+        let data = await cloudwatchlogs.filterLogEvents(params).promise();
+
+        let events = data.events;
+
+        let nextToken = data.nextToken;
+
+        while (nextToken) {
+            params.nextToken = nextToken;
+
+            data = await cloudwatchlogs.filterLogEvents(params).promise();
+            events = events.concat(data.events);
+            nextToken = data.nextToken;
+        }
+
+        return events;
+    }
+
     return {
         getAllLogGroups: async function () {
             let response = await cloudwatchlogs.describeLogGroups().promise();
@@ -69,6 +87,16 @@ function LogScraper(region) {
             return entries;
         },
 
+        getAllLogItemsForStreamMatching: async function(group, stream, pattern) {
+            const params = {
+                logGroupName: group,
+                filterPattern: pattern,
+                stream: stream
+            };
+            return await getAllLogItemsMatching(params);
+        },
+
+
         getAllLogItemsForGroup: async function(group) {
             const streams = await this.getAllLogStreamsOfGroup(group);
 
@@ -88,21 +116,7 @@ function LogScraper(region) {
                 logGroupName: group,
                 filterPattern: pattern,
             };
-            let data = await cloudwatchlogs.filterLogEvents(params).promise();
-
-            let events = data.events;
-
-            let nextToken = data.nextToken;
-
-            while (nextToken) {
-                params.nextToken = nextToken;
-
-                data = await cloudwatchlogs.filterLogEvents(params).promise();
-                events = events.concat(data.events);
-                nextToken = data.nextToken;
-            }
-
-            return events;
+            return await getAllLogItemsMatching(params);
         },
 
         clearLogGroup: async function (group) {
